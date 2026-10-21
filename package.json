@@ -1,0 +1,128 @@
+{
+  "name": "craftnor",
+  "version": "1.3.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "test": "node --import tsx --test src/engine.test.ts src/catalog.test.ts src/export.test.ts src/artwork.test.ts src/studio.test.ts",
+    "desktop:dev": "npm run build && electron .",
+    "desktop:test": "node --test desktop/paths.test.cjs desktop/projects.test.cjs",
+    "desktop:mac": "npm run build && electron-builder --mac dmg --arm64 --x64 --publish never",
+    "desktop:windows": "npm run build && electron-builder --win nsis --x64 --publish never",
+    "desktop:linux": "npm run build && electron-builder --linux tar.gz --x64 --arm64 --publish never"
+  },
+  "dependencies": {
+    "clipper-lib": "6.4.2",
+    "harfbuzzjs": "^0.10.0",
+    "paper": "^0.12.18",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "@types/clipper-lib": "^6.4.0",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "electron": "44.9.2",
+    "electron-builder": "26.15.3",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.0.0"
+  },
+  "description": "Craftnor — offline Unicode vector text effects studio",
+  "author": "Appaji Ambarisha Darbha",
+  "main": "desktop/main.cjs",
+  "build": {
+    "appId": "studio.craftnor.desktop",
+    "productName": "Craftnor",
+    "directories": {
+      "output": "../desktop-builds",
+      "buildResources": "desktop/resources"
+    },
+    "files": [
+      "dist/**/*",
+      "desktop/main.cjs",
+      "desktop/paths.cjs",
+      "package.json",
+      "desktop/preload.cjs",
+      "desktop/projects.cjs"
+    ],
+    "asar": true,
+    "npmRebuild": false,
+    "artifactName": "Craftnor-${version}-${os}-${arch}.${ext}",
+    "mac": {
+      "category": "public.app-category.graphics-design",
+      "target": [
+        "dmg"
+      ],
+      "identity": null,
+      "icon": "desktop/resources/icon.icns",
+      "extendInfo": {
+        "UTExportedTypeDeclarations": [
+          {
+            "UTTypeIdentifier": "studio.craftnor.project",
+            "UTTypeDescription": "Craftnor Project",
+            "UTTypeConformsTo": [
+              "public.data",
+              "public.content"
+            ],
+            "UTTypeIconFile": "cfnr.icns",
+            "UTTypeTagSpecification": {
+              "public.filename-extension": [
+                "cfnr"
+              ],
+              "public.mime-type": "application/x-craftnor-project"
+            }
+          }
+        ]
+      }
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "desktop/resources/icon.ico",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "linux": {
+      "target": [
+        "tar.gz"
+      ],
+      "category": "Graphics",
+      "executableName": "craftnor",
+      "icon": "desktop/resources/icon.png",
+      "extraFiles": [
+        {
+          "from": "desktop/install-linux.sh",
+          "to": "install-craftnor.sh"
+        },
+        {
+          "from": "public/branding/app-icon-192.png",
+          "to": "craftnor-icon.png"
+        },
+        {
+          "from": "public/branding/document-icon-192.png",
+          "to": "craftnor-document.png"
+        }
+      ]
+    },
+    "fileAssociations": [
+      {
+        "ext": "cfnr",
+        "name": "Craftnor Project",
+        "description": "Editable Craftnor project",
+        "role": "Editor",
+        "mimeType": "application/x-craftnor-project",
+        "rank": "Owner"
+      }
+    ]
+  }
+}

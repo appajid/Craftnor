@@ -1,0 +1,15 @@
+import{type Settings}from'./engine';
+export type CanvasSettings={width:number;height:number;padding:number};
+export const defaultCanvas:CanvasSettings={width:1200,height:800,padding:80};
+export const canvasPresets=[{name:'Landscape',width:1600,height:900},{name:'Square',width:1080,height:1080},{name:'Portrait',width:1080,height:1350},{name:'Story',width:1080,height:1920},{name:'A4 · 300 dpi',width:2480,height:3508}];
+export function normalizeCanvas(v:Partial<CanvasSettings>|undefined):CanvasSettings{const n=(value:unknown,fallback:number,min:number,max:number)=>typeof value==='number'&&Number.isFinite(value)?Math.round(Math.max(min,Math.min(max,value))):fallback;const width=n(v?.width,1200,100,8192),height=n(v?.height,800,100,8192);return{width,height,padding:n(v?.padding,80,0,Math.min(width,height)*.45)};}
+export type LayerId='face'|'texture'|'outline'|'depth'|'shadow';
+export type LayerSettings={order:LayerId[];enabled:Record<LayerId,boolean>;texture:'none'|'hatch'|'dots'|'grain';textureOpacity:number;outlineWidth:number;shadowDistance:number;sideShading:boolean};
+export const layerNames:Record<LayerId,string>={face:'Face',texture:'Texture',outline:'Outline',depth:'Depth',shadow:'Shadow'};
+export const defaultLayers:LayerSettings={order:['shadow','depth','face','texture','outline'],enabled:{face:true,texture:true,outline:true,depth:true,shadow:true},texture:'none',textureOpacity:40,outlineWidth:0,shadowDistance:0,sideShading:false};
+export function normalizeLayers(v:Partial<LayerSettings>|undefined):LayerSettings{const ids=Object.keys(layerNames) as LayerId[],order=Array.isArray(v?.order)?[...new Set(v.order.filter(id=>ids.includes(id)))]:defaultLayers.order.slice();for(const id of defaultLayers.order)if(!order.includes(id))order.push(id);const enabled={...defaultLayers.enabled};for(const id of ids)if(typeof v?.enabled?.[id]==='boolean')enabled[id]=v.enabled[id];const n=(x:unknown,d:number,max:number)=>typeof x==='number'&&Number.isFinite(x)?Math.max(0,Math.min(max,x)):d;return{order,enabled,texture:['none','hatch','dots','grain'].includes(v?.texture||'')?v!.texture!:'none',textureOpacity:n(v?.textureOpacity,40,100),outlineWidth:n(v?.outlineWidth,0,15),shadowDistance:n(v?.shadowDistance,0,150),sideShading:v?.sideShading===true};}
+export type Viewport={scale:number;x:number;y:number};
+export function zoomAt(v:Viewport,factor:number,x:number,y:number):Viewport{const scale=Math.max(.05,Math.min(8,v.scale*factor)),ratio=scale/v.scale;return{scale,x:x-(x-v.x)*ratio,y:y-(y-v.y)*ratio};}
+export function fitViewport(viewWidth:number,viewHeight:number,docWidth:number,docHeight:number,margin=24):Viewport{const scale=Math.max(.05,Math.min(8,Math.min(Math.max(1,viewWidth-margin*2)/docWidth,Math.max(1,viewHeight-margin*2)/docHeight)));return{scale,x:(viewWidth-docWidth*scale)/2,y:(viewHeight-docHeight*scale)/2};}
+export function scriptGroup(id:string){return id.startsWith('local:')?'system':id==='custom'?'uploaded':id==='hindi'?'hindi':['sans','serif','courgette','pirataone','bangers'].includes(id)?'latin':'telugu';}
+export function resetValue(s:Settings,key:keyof Settings,value:number){return{...s,[key]:value};}

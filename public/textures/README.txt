@@ -1,0 +1,2 @@
+Original Craftnor procedural paper surfaces by OpenAI, created for Appaji Ambarisha Darbha. Generated from seeded multiscale noise, fiber fields and directional relief; no third-party scans or photographs. Generator: scripts/generate-paper-textures.py. JPEG backgrounds are embedded in exported SVG; lettering stays vector.
+Foil material fills are also original generated images; SVG letter outlines remain paths and embed these material fills. Textured foil is a 2D lighting simulation, not a 3D physical renderer.
